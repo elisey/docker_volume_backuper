@@ -12,3 +12,9 @@ vim servers.yaml
 ```bash
 uv run main.py
 ```
+
+or
+
+```bash
+task run
+```

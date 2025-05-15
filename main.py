@@ -1,9 +1,10 @@
 import yaml
+
 from backuper import Backuper, Server
 
 
 def load_servers_from_yaml(path: str) -> list[Server]:
-    with open(path, 'r') as f:
+    with open(path) as f:
         config = yaml.safe_load(f)
 
     servers_data = config.get("servers")

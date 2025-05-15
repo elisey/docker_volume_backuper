@@ -1,21 +1,30 @@
 import subprocess
 import sys
-from datetime import datetime
 from pathlib import Path
 
+from loguru import logger
 from paramiko.client import SSHClient
 from scp import SCPClient
-from loguru import logger
 from tqdm import tqdm
 
 logger.remove()
-logger.add(sys.stderr, level="INFO", colorize=True,
-           format="<green>{time:HH:mm:ss}</green> | <level>{level}</level> | {message}")
+logger.add(
+    sys.stderr,
+    level="INFO",
+    colorize=True,
+    format="<green>{time:HH:mm:ss}</green> | <level>{level}</level> | {message}",
+)
 
 
 class ServerBackuper:
     REMOTE_BACKUP_DIR = "/home/www/backups"
-    def __init__(self, ssh_client: SSHClient, local_backup_dir: Path, remote_backup_dir: str = REMOTE_BACKUP_DIR) -> None:
+
+    def __init__(
+        self,
+        ssh_client: SSHClient,
+        local_backup_dir: Path,
+        remote_backup_dir: str = REMOTE_BACKUP_DIR,
+    ) -> None:
         self.ssh_client: SSHClient = ssh_client
         self.remote_backup_dir = remote_backup_dir
         self.local_backup_dir = local_backup_dir
@@ -29,7 +38,8 @@ class ServerBackuper:
             error_output = stderr.read().decode().strip()
 
             raise RuntimeError(
-                f"Command '{command}' failed with exit code {exit_status}.\nError output:\n{error_output}\nStd output:\n{output}")
+                f"Command '{command}' failed with exit code {exit_status}.\nError output:\n{error_output}\nStd output:\n{output}"
+            )
 
         return output
 
@@ -39,15 +49,14 @@ class ServerBackuper:
 
     def __save_remove_volume_to_tar(self, volume_name: str) -> Path:
         """Save each volume to a tar file on the remote machine."""
-
         filename = f"{volume_name}.tar.gz"
         command = (
-            'docker run --rm '
-            f'-v {volume_name}:/backup/data '
-            f'-v {self.remote_backup_dir}:/archive '
+            "docker run --rm "
+            f"-v {volume_name}:/backup/data "
+            f"-v {self.remote_backup_dir}:/archive "
             f'--env BACKUP_FILENAME="{filename}" '
-            '--entrypoint backup '
-            f'offen/docker-volume-backup:v2'
+            "--entrypoint backup "
+            f"offen/docker-volume-backup:v2"
         )
         self.__exec_command_sync(command)
         return Path(self.remote_backup_dir) / filename
@@ -62,7 +71,13 @@ class ServerBackuper:
         def progress(_, size, sent):
             nonlocal progress_bar
             if progress_bar is None and size > 0:
-                progress_bar = tqdm(total=size, unit='B', unit_scale=True, desc=f"Fetching {filename}", leave=False)
+                progress_bar = tqdm(
+                    total=size,
+                    unit="B",
+                    unit_scale=True,
+                    desc=f"Fetching {filename}",
+                    leave=False,
+                )
             if progress_bar:
                 progress_bar.update(sent - progress_bar.n)
 
@@ -84,15 +99,16 @@ class ServerBackuper:
             )
             logger.debug(f"Verified tar file {tar_path} successfully.")
         except subprocess.CalledProcessError as e:
-            raise RuntimeError(f"Verification failed for {tar_path}: {e.stderr.decode().strip()}")
+            raise RuntimeError(
+                f"Verification failed for {tar_path}: {e.stderr.decode().strip()}"
+            )
 
     def __delete_remote_file(self, filepath: Path):
-        command = f'rm {filepath}'
+        command = f"rm {filepath}"
         self.__exec_command_sync(command)
 
     def __get_local_backup_dir(self, hostname: str) -> Path:
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        backup_dir = self.local_backup_dir / f"{hostname}_{timestamp}"
+        backup_dir = self.local_backup_dir / hostname
         backup_dir.mkdir(parents=True, exist_ok=True)
         return backup_dir
 
@@ -107,7 +123,7 @@ class ServerBackuper:
         self.__create_remote_backup_dir()
 
         volumes = self.__list_docker_volumes()
-        logger.info(f"Found Docker volumes:")
+        logger.info("Found Docker volumes:")
         for volume in volumes:
             logger.info(f"  • {volume}")
 
