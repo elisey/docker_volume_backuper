@@ -5,6 +5,7 @@ tasks:
     desc: Run the main application with uv
     cmds:
       - uv run main.py
+
   format:
     desc: Format code with Black
     cmds:
@@ -13,14 +14,9 @@ tasks:
   lint:
     desc: Lint with Ruff
     cmds:
-      - uv run ruff check
-
-  fix:
-    desc: Lint and fix with Ruff
-    cmds:
       - uv run ruff check --fix
 
-  typecheck:
+  mypy:
     desc: Type-check with mypy
     cmds:
       - uv run mypy .
@@ -29,4 +25,4 @@ tasks:
     desc: Run format, lint and typecheck
     cmds:
       - task lint
-      - task typecheck
+      - task mypy

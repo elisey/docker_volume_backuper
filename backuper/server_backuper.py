@@ -32,18 +32,21 @@ class ServerBackuper:
     def __exec_command_sync(self, command: str) -> list[str]:
         stdin, stdout, stderr = self.ssh_client.exec_command(command)
         exit_status = stdout.channel.recv_exit_status()
-        output = stdout.read().decode().splitlines()
+        output: list[str] = stdout.read().decode().splitlines()
 
         if exit_status != 0:
             error_output = stderr.read().decode().strip()
 
-            raise RuntimeError(
-                f"Command '{command}' failed with exit code {exit_status}.\nError output:\n{error_output}\nStd output:\n{output}"
+            msg = (
+                f"Command '{command}' failed with exit code {exit_status}.\n"
+                f"Error output:\n{error_output}\n"
+                f"Std output:\n{output}"
             )
+            raise RuntimeError(msg)
 
         return output
 
-    def __list_docker_volumes(self):
+    def __list_docker_volumes(self) -> list[str]:
         command = "docker volume ls -q"
         return self.__exec_command_sync(command)
 
@@ -68,7 +71,7 @@ class ServerBackuper:
 
         progress_bar: tqdm | None = None
 
-        def progress(_, size, sent):
+        def progress(_: str, size: int, sent: int) -> None:
             nonlocal progress_bar
             if progress_bar is None and size > 0:
                 progress_bar = tqdm(
@@ -92,18 +95,17 @@ class ServerBackuper:
     def __verify_tar_file(self, tar_path: Path) -> None:
         try:
             subprocess.run(
-                ["tar", "-tzf", str(tar_path)],
+                ["/usr/bin/tar", "-tzf", str(tar_path.absolute())],
                 check=True,
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.PIPE,
             )
             logger.debug(f"Verified tar file {tar_path} successfully.")
         except subprocess.CalledProcessError as e:
-            raise RuntimeError(
-                f"Verification failed for {tar_path}: {e.stderr.decode().strip()}"
-            )
+            msg = f"Verification failed for {tar_path}: {e.stderr.decode().strip()}"
+            raise RuntimeError(msg) from e
 
-    def __delete_remote_file(self, filepath: Path):
+    def __delete_remote_file(self, filepath: Path) -> None:
         command = f"rm {filepath}"
         self.__exec_command_sync(command)
 
@@ -116,7 +118,7 @@ class ServerBackuper:
         command = f'mkdir -p "{self.remote_backup_dir}"'
         self.__exec_command_sync(command)
 
-    def backup_server(self, server_name) -> None:
+    def backup_server(self, server_name: str) -> None:
         local_backup_dir = self.__get_local_backup_dir(server_name)
         logger.debug(f"Starting backing up to {local_backup_dir}")
         logger.debug(f"Create remove backup dir {self.remote_backup_dir}")
@@ -139,4 +141,5 @@ class ServerBackuper:
             self.__delete_remote_file(filepath)
 
         logger.opt(colors=True).success(
-            f"✅ All volumes from <blue>{server_name}</blue> have been backed up to {local_backup_dir}")
+            f"✅ All volumes from <blue>{server_name}</blue> have been backed up to {local_backup_dir}"
+        )

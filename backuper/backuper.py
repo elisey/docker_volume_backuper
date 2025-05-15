@@ -1,9 +1,11 @@
 import sys
+from collections.abc import Generator
 from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
 
 import paramiko
+import tzlocal
 from loguru import logger
 
 from .server import Server
@@ -25,9 +27,9 @@ class Backuper:
         self.servers = servers
 
     @contextmanager
-    def ssh_client(self, server: Server):
-        ssh_client = paramiko.SSHClient()
-        ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    def ssh_client(self, server: Server) -> Generator[paramiko.SSHClient]:
+        ssh_client: paramiko.SSHClient = paramiko.SSHClient()
+        ssh_client.set_missing_host_key_policy(paramiko.RejectPolicy())
         ssh_client.connect(
             hostname=server.hostname,
             port=server.port,
@@ -46,7 +48,7 @@ class Backuper:
         for server in self.servers:
             logger.info(f"  • {server.name}")
 
-        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        timestamp = datetime.now(tzlocal.get_localzone()).strftime("%Y-%m-%d_%H-%M-%S")
         backup_dir = self.MAIN_BACKUP_DIR / f"backup_{timestamp}"
         logger.info(f"Backup dir: {backup_dir}")
 

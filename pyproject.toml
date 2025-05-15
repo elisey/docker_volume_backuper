@@ -10,6 +10,8 @@ dependencies = [
     "pyyaml>=6.0.2",
     "scp>=0.15.0",
     "tqdm>=4.67.1",
+    "types-pyyaml>=6.0.12.20250402",
+    "tzlocal>=5.3.1",
 ]
 
 [dependency-groups]
@@ -21,7 +23,7 @@ dev = [
 [tool.ruff]
 line-length = 120
 lint.select = ["ALL"]
-lint.ignore = ["D203", "D211", "D213", "COM812"]
+lint.ignore = ["D100", "D101", "D102", "D103", "D104", "D107", "D203", "D211", "D213", "COM812", "S603"]
 target-version = "py313"
 
 [tool.mypy]

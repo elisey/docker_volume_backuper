@@ -1,17 +1,20 @@
+from pathlib import Path
+
 import yaml
 
 from backuper import Backuper, Server
 
 
 def load_servers_from_yaml(path: str) -> list[Server]:
-    with open(path) as f:
+    with Path(path).open() as f:
         config = yaml.safe_load(f)
 
     servers_data = config.get("servers")
     if servers_data is None:
-        raise Exception("Servers configuration file (servers.yaml) is missing")
+        msg = "Servers configuration file (servers.yaml) is missing"
+        raise RuntimeError(msg)
 
-    servers = [
+    return [
         Server(
             name=entry["name"],
             hostname=entry["hostname"],
@@ -22,10 +25,8 @@ def load_servers_from_yaml(path: str) -> list[Server]:
         for entry in servers_data
     ]
 
-    return servers
 
-
-def main():
+def main() -> None:
     servers = load_servers_from_yaml("servers.yaml")
     backuper = Backuper(servers)
     backuper.backup()
