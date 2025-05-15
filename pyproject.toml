@@ -1,0 +1,12 @@
+[project]
+name = "docker-volume-backaper"
+version = "0.1.0"
+description = "Backuper for remote docker volumes"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "loguru>=0.7.3",
+    "paramiko>=3.5.1",
+    "pyyaml>=6.0.2",
+    "scp>=0.15.0",
+]

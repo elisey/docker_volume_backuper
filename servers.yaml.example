@@ -1,0 +1,11 @@
+servers:
+  - name: "Foo"
+    hostname: "123.4.5.6"
+    port: 22
+    username: "www"
+    ssh_key_path: "/home/baz/.ssh/id_rsa"
+  - name: "Bar"
+    hostname: "7.8.9.1"
+    port: 2230
+    username: "www"
+    ssh_key_path: "/home/baz/.ssh/id_rsa"
