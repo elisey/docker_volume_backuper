@@ -10,4 +10,5 @@ wheels/
 .venv
 
 backup/
+backups/
 servers.yaml

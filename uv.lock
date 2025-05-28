@@ -128,6 +128,7 @@ dependencies = [
     { name = "pyyaml" },
     { name = "scp" },
     { name = "tqdm" },
+    { name = "types-paramiko" },
     { name = "types-pyyaml" },
     { name = "tzlocal" },
 ]
@@ -145,6 +146,7 @@ requires-dist = [
     { name = "pyyaml", specifier = ">=6.0.2" },
     { name = "scp", specifier = ">=0.15.0" },
     { name = "tqdm", specifier = ">=4.67.1" },
+    { name = "types-paramiko", specifier = ">=3.5.0.20250516" },
     { name = "types-pyyaml", specifier = ">=6.0.12.20250402" },
     { name = "tzlocal", specifier = ">=5.3.1" },
 ]
@@ -303,6 +305,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/a8/4b/29b4ef32e036bb34e4ab51796dd745cdba7ed47ad142a9f4a1eb8e0c744d/tqdm-4.67.1.tar.gz", hash = "sha256:f8aef9c52c08c13a65f30ea34f4e5aac3fd1a34959879d7e59e63027286627f2", size = 169737, upload-time = "2024-11-24T20:12:22.481Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/d0/30/dc54f88dd4a2b5dc8a0279bdd7270e735851848b762aeb1c1184ed1f6b14/tqdm-4.67.1-py3-none-any.whl", hash = "sha256:26445eca388f82e72884e0d580d5464cd801a3ea01e63e5601bdff9ba6a48de2", size = 78540, upload-time = "2024-11-24T20:12:19.698Z" },
+]
+
+[[package]]
+name = "types-paramiko"
+version = "3.5.0.20250516"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "cryptography" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/c0/f4/6b8b9875f1fe044fedd7f7cde1827f58510e3735c151bdd8aeb9ec2a3dcd/types_paramiko-3.5.0.20250516.tar.gz", hash = "sha256:8c2ac59648c16c5469aa0559abdb758a0f67f9f7cf36164b64654f7b6c2ebfb0", size = 28021, upload-time = "2025-05-16T03:08:56.619Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/32/61/4db776f25de0d4076bc637f54112555806170005ae48500688d7b0f392d0/types_paramiko-3.5.0.20250516-py3-none-any.whl", hash = "sha256:76ac5cbc0c04d36635ac080f301a864f698ef06b64c3a01a33dc657bd413b675", size = 38792, upload-time = "2025-05-16T03:08:55.692Z" },
 ]
 
 [[package]]

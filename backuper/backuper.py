@@ -21,7 +21,8 @@ logger.add(
 
 
 class Backuper:
-    MAIN_BACKUP_DIR = Path("backup")
+    MAIN_BACKUP_DIR = Path("backups")
+    REMOTE_BACKUP_DIR_NAME = Path("backups")
 
     def __init__(self, servers: list[Server]) -> None:
         self.servers = servers
@@ -29,6 +30,7 @@ class Backuper:
     @contextmanager
     def ssh_client(self, server: Server) -> Generator[paramiko.SSHClient]:
         ssh_client: paramiko.SSHClient = paramiko.SSHClient()
+        ssh_client.load_system_host_keys()
         ssh_client.set_missing_host_key_policy(paramiko.RejectPolicy())
         ssh_client.connect(
             hostname=server.hostname,
@@ -54,9 +56,9 @@ class Backuper:
 
         for server in self.servers:
             logger.info(f"▶️ Backing up {server.name} server")
-
+            remote_backup_dir = Path("/home") / server.username / self.REMOTE_BACKUP_DIR_NAME
             with self.ssh_client(server) as ssh_client:
-                server_backuper = ServerBackuper(ssh_client, backup_dir)
+                server_backuper = ServerBackuper(ssh_client, backup_dir, remote_backup_dir)
                 server_backuper.backup_server(server.name)
 
         logger.success(f"✅ All servers have been backed up to {backup_dir}")

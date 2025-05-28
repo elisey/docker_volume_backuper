@@ -17,13 +17,11 @@ logger.add(
 
 
 class ServerBackuper:
-    REMOTE_BACKUP_DIR = "/home/www/backups"
-
     def __init__(
         self,
         ssh_client: SSHClient,
         local_backup_dir: Path,
-        remote_backup_dir: str = REMOTE_BACKUP_DIR,
+        remote_backup_dir: Path,
     ) -> None:
         self.ssh_client: SSHClient = ssh_client
         self.remote_backup_dir = remote_backup_dir
@@ -62,7 +60,7 @@ class ServerBackuper:
             f"offen/docker-volume-backup:v2"
         )
         self.__exec_command_sync(command)
-        return Path(self.remote_backup_dir) / filename
+        return self.remote_backup_dir / filename
 
     def __fetch_tar_file(self, filepath: Path, dest_dir: Path) -> Path:
         """Fetch the tar file from the remote machine to the local machine with progress bar."""
